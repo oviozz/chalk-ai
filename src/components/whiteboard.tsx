@@ -12,13 +12,15 @@ import {StarModal} from "@/components/star-modal";
 import BrandLogo from "@/components/brand-logo";
 import {TopicType} from "@/app/page";
 import ProblemDisplay from "@/components/problem-display";
+import ProblemDisplaySkeleton from "@/components/problem-display-skeleton";
 
 type WhiteboardProps = {
     topic: TopicType | null,
     clearTopic: () => void,
-    problem_generated: string
+    problem_generated: string,
+    problem_loading: boolean,
 }
-export default function Whiteboard({topic, clearTopic, problem_generated}: WhiteboardProps) {
+export default function Whiteboard({topic, clearTopic, problem_generated, problem_loading}: WhiteboardProps) {
     const {
         canvasRef,
         selectedTool,
@@ -106,7 +108,7 @@ export default function Whiteboard({topic, clearTopic, problem_generated}: White
                         <StarModal />
                     </div>
 
-                    {problem_generated && <ProblemDisplay problem={problem_generated} />}
+                    {problem_loading || !problem_generated ? <ProblemDisplaySkeleton /> : <ProblemDisplay problem={problem_generated} />}
 
                     {/* AI Buttons */}
                     <div className="absolute bottom-4 right-4 flex flex-col gap-3">
