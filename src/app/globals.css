@@ -2,7 +2,6 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
-
 .whiteboard-canvas {
   touch-action: none;
 }

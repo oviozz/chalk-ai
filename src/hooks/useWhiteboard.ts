@@ -310,6 +310,7 @@ const useWhiteboard = () => {
         };
     };
 
+
     return {
         canvasRef,
         selectedTool,

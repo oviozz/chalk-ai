@@ -1,18 +1,21 @@
-
 // Whiteboard.tsx
 "use client";
 
-import { useEffect, useCallback, useRef } from 'react';
-import {Undo2, Redo2, Eraser, Sparkles, Send, Lightbulb, X} from 'lucide-react';
+import {useEffect, useCallback, useRef} from 'react';
+import {Undo2, Redo2, Eraser, Sparkles, Send} from 'lucide-react';
 import useWhiteboard from "@/hooks/useWhiteboard";
-import { FaPenFancy } from "react-icons/fa";
-import { FiImage } from "react-icons/fi";
-import { Button } from "@/components/ui/button";
+import {FaPenFancy} from "react-icons/fa";
+import {FiImage} from "react-icons/fi";
+import {Button} from "@/components/ui/button";
 import {StarModal} from "@/components/star-modal";
 import BrandLogo from "@/components/brand-logo";
 import {TopicType} from "@/app/page";
 import ProblemDisplay from "@/components/problem-display";
 import ProblemDisplaySkeleton from "@/components/problem-display-skeleton";
+import AskForHint from "@/components/ask-for-hint";
+import RestartTopic from "@/components/restart-topic";
+import CheckWork from "@/components/check-work";
+import SubmitWork from "@/components/submit-work";
 
 type WhiteboardProps = {
     topic: TopicType | null,
@@ -100,31 +103,28 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
 
     return (
         <div className="relative h-screen w-screen bg-amber-950 p-4">
-            <div className="absolute inset-0 m-4 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==')] rounded-lg p-2">
+            <div
+                className="absolute inset-0 m-4 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==')] rounded-lg p-2">
                 <div className="relative h-full w-full bg-gray-900 rounded-lg border-2 border-gray-800 shadow-2xl">
                     {/* Header */}
                     <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4">
-                        <BrandLogo />
-                        <StarModal />
+                        <BrandLogo/>
+                        <StarModal/>
                     </div>
 
-                    {problem_loading || !problem_generated ? <ProblemDisplaySkeleton /> : <ProblemDisplay problem={problem_generated} />}
+                    {problem_loading || !problem_generated ? <ProblemDisplaySkeleton/> :
+                        <ProblemDisplay problem={problem_generated}/>}
 
                     {/* AI Buttons */}
                     <div className="absolute bottom-4 right-4 flex flex-col gap-3">
-                        <Button size={"lg"} className="px-4 py-2 bg-gray-800/90 backdrop-blur-sm rounded-full text-white text-sm font-chalk hover:bg-gray-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/20">
-                            <Lightbulb className="w-4 h-4" /> Ask for Hint
-                        </Button>
-                        <Button size={"lg"} className="px-4 py-2 bg-gray-800/90 backdrop-blur-sm rounded-full text-white text-sm font-chalk hover:bg-gray-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-blue-500/20">
-                            <Sparkles className="w-4 h-4" /> Check Work
-                        </Button>
-                        <Button size={"lg"} className="px-4 py-2 bg-gradient-to-br from-purple-600 to-blue-600 backdrop-blur-sm rounded-full text-white text-sm font-chalk hover:opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-purple-500/30">
-                            <Send className="w-4 h-4" /> Submit Work
-                        </Button>
+                        <AskForHint problem={problem_generated}/>
+                        <CheckWork problem={problem_generated} />
+                        <SubmitWork problem={problem_generated} clear_topic={clearTopic} />
                     </div>
 
                     {/* Left Toolbar */}
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 bg-gray-800/90 backdrop-blur-sm p-2.5 rounded-xl shadow-xl">
+                    <div
+                        className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 bg-gray-800/90 backdrop-blur-sm p-2.5 rounded-xl shadow-xl">
                         <div className="flex flex-col gap-3 items-center">
                             <input
                                 type="color"
@@ -142,13 +142,14 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
                                     onChange={e => setStrokeWidth(Number(e.target.value))}
                                     className="w-full slider-thumb-purple"
                                 />
-                                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-xs text-white font-chalk">
+                                <span
+                                    className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-xs text-white font-chalk">
                                     {strokeWidth}px
                                 </span>
                             </div>
                         </div>
 
-                        <div className="h-px bg-gray-600 my-1" />
+                        <div className="h-px bg-gray-600 my-1"/>
 
                         <div className="flex flex-col gap-2">
                             <button
@@ -159,7 +160,7 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
                                         : 'text-white hover:bg-gray-700/50 hover:text-purple-300'
                                 }`}
                             >
-                                <FaPenFancy className="w-5 h-5" />
+                                <FaPenFancy className="w-5 h-5"/>
                             </button>
                             <button
                                 onClick={() => {
@@ -172,11 +173,11 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
                                         : 'text-white hover:bg-gray-700/50 hover:text-blue-300'
                                 }`}
                             >
-                                <FiImage className="w-5 h-5" />
+                                <FiImage className="w-5 h-5"/>
                             </button>
                         </div>
 
-                        <div className="h-px bg-gray-600 my-1" />
+                        <div className="h-px bg-gray-600 my-1"/>
 
                         <div className="flex flex-col gap-2">
                             <button
@@ -184,20 +185,20 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
                                 disabled={historyIndex === 0}
                                 className="p-2 rounded-lg hover:bg-gray-700/50 disabled:opacity-30 transition-all text-white flex items-center justify-center"
                             >
-                                <Undo2 className="w-5 h-5" strokeWidth={3} />
+                                <Undo2 className="w-5 h-5" strokeWidth={3}/>
                             </button>
                             <button
                                 onClick={redo}
                                 disabled={historyIndex === history.length - 1}
                                 className="p-2 rounded-lg hover:bg-gray-700/50 disabled:opacity-30 transition-all text-white flex items-center justify-center"
                             >
-                                <Redo2 className="w-5 h-5" strokeWidth={3} />
+                                <Redo2 className="w-5 h-5" strokeWidth={3}/>
                             </button>
                             <button
                                 onClick={clearCanvas}
                                 className="p-2 rounded-lg hover:bg-gray-700/50 text-red-400 transition-all flex items-center justify-center"
                             >
-                                <Eraser className="w-5 h-5" strokeWidth={3} />
+                                <Eraser className="w-5 h-5" strokeWidth={3}/>
                             </button>
                         </div>
                     </div>
@@ -221,10 +222,10 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
 
                                     const handleSize = 8;
                                     const handles = {
-                                        nw: [image.x - handleSize/2, image.y - handleSize/2],
-                                        ne: [image.x + image.width - handleSize/2, image.y - handleSize/2],
-                                        sw: [image.x - handleSize/2, image.y + image.height - handleSize/2],
-                                        se: [image.x + image.width - handleSize/2, image.y + image.height - handleSize/2]
+                                        nw: [image.x - handleSize / 2, image.y - handleSize / 2],
+                                        ne: [image.x + image.width - handleSize / 2, image.y - handleSize / 2],
+                                        sw: [image.x - handleSize / 2, image.y + image.height - handleSize / 2],
+                                        se: [image.x + image.width - handleSize / 2, image.y + image.height - handleSize / 2]
                                     };
 
                                     let handle: 'nw' | 'ne' | 'sw' | 'se' | undefined;
@@ -267,16 +268,12 @@ export default function Whiteboard({topic, clearTopic, problem_generated, proble
                         className="hidden"
                     />
 
-                    <div className={"absolute bottom-2 left-2 "}>
-                        <div className={"flex items-center gap-1 text-white font-bold text-2xl"}>
-                            Current Topic: {topic?.topicID.toUpperCase()}
-                            <X
-                                onClick={clearTopic}
-                                className={"text-red-500 w-9 h-9"}
-                                strokeWidth={3}
-                            />
-                        </div>
-                    </div>
+                    <RestartTopic
+                        clearTopic={() => {
+                            clearTopic()
+                            clearCanvas()
+                        }}
+                        topic={topic}/>
 
                 </div>
             </div>

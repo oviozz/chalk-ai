@@ -3,7 +3,8 @@
 import Whiteboard from "@/components/whiteboard";
 import TopicSelector from "@/components/topic-selector";
 import {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useStarModalStore} from "@/lib/store/useStarModalStore";
 
 export type TopicType = {
     topicID: string,
@@ -13,8 +14,10 @@ export type TopicType = {
 
 export default function Home() {
 
+    const queryClient = useQueryClient();
     const [showTopicSelector, setShowTopicSelector] = useState(true);
     const [selectedTopic, setSelectedTopic] = useState<TopicType | null>(null);
+    const { setIsPending, close } = useStarModalStore();
 
     const {data: generated_problem, isPending} = useQuery({
         queryKey: ["generate-problem"],
@@ -29,10 +32,13 @@ export default function Home() {
     const clearTopic = () => {
         setSelectedTopic(null);
         setShowTopicSelector(true);
+        queryClient.removeQueries({ queryKey: ["generate-problem"]});
+        setIsPending(false);
+        close()
     }
 
     return (
-        <div>
+        <div id={"main-content"}>
             { (!selectedTopic?.topicID || !selectedTopic?.prompt) && (
                 <TopicSelector
                     onClose={() => setShowTopicSelector(false)}
