@@ -1,4 +1,5 @@
 
+// useWhiteboard.tsx
 import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -22,7 +23,6 @@ type Image = {
 };
 
 const useWhiteboard = () => {
-
     const [selectedTool, setSelectedTool] = useState<Tool>('pen');
     const [color, setColor] = useState('#ffffff');
     const [strokeWidth, setStrokeWidth] = useState(3);
@@ -33,8 +33,8 @@ const useWhiteboard = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const startPos = useRef<{ x: number; y: number } | null>(null);
+    const imagesCache = useRef<Map<string, HTMLImageElement>>(new Map());
 
-    // Image manipulation state
     const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
     const [isResizing, setIsResizing] = useState(false);
     const [resizeHandle, setResizeHandle] = useState<'nw' | 'ne' | 'sw' | 'se'>('se');
@@ -77,11 +77,11 @@ const useWhiteboard = () => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw images first
         images.forEach(image => {
-            const img = new Image();
-            img.src = image.dataURL;
-            ctx.drawImage(img, image.x, image.y, image.width, image.height);
+            const cachedImg = imagesCache.current.get(image.dataURL);
+            if (cachedImg) {
+                ctx.drawImage(cachedImg, image.x, image.y, image.width, image.height);
+            }
 
             if (image.id === selectedImageId) {
                 ctx.strokeStyle = '#3b82f6';
@@ -103,7 +103,6 @@ const useWhiteboard = () => {
             }
         });
 
-        // Draw pen strokes
         drawings.forEach(drawing => {
             ctx.strokeStyle = drawing.color;
             ctx.lineWidth = drawing.strokeWidth;
@@ -165,7 +164,7 @@ const useWhiteboard = () => {
             setIsDrawing(true);
             startPos.current = { x, y };
             setDrawings(prev => {
-                const newDrawing = {
+                const newDrawing: Drawing = {
                     type: 'pen',
                     points: [[x, y]],
                     color,
@@ -276,27 +275,38 @@ const useWhiteboard = () => {
         setSelectedImageId(null);
     };
 
+    const createImageFromDataURL = (dataURL: string, img: HTMLImageElement) => {
+        const aspectRatio = img.width / img.height;
+        const newImage: Image = {
+            id: uuidv4(),
+            dataURL,
+            x: 100,
+            y: 100,
+            width: 200,
+            height: 200 / aspectRatio,
+            aspectRatio,
+            isDragging: false,
+        };
+
+        setImages(prev => {
+            const newImages = [...prev, newImage];
+            pushHistory(drawings, newImages);
+            return newImages;
+        });
+    };
+
     const addImage = (dataURL: string) => {
+        if (imagesCache.current.has(dataURL)) {
+            const cachedImg = imagesCache.current.get(dataURL)!;
+            createImageFromDataURL(dataURL, cachedImg);
+            return;
+        }
+
         const img = new Image();
         img.src = dataURL;
         img.onload = () => {
-            const aspectRatio = img.width / img.height;
-            const newImage: Image = {
-                id: uuidv4(),
-                dataURL,
-                x: 100,
-                y: 100,
-                width: 200,
-                height: 200 / aspectRatio,
-                aspectRatio,
-                isDragging: false,
-            };
-
-            setImages(prev => {
-                const newImages = [...prev, newImage];
-                pushHistory(drawings, newImages);
-                return newImages;
-            });
+            imagesCache.current.set(dataURL, img);
+            createImageFromDataURL(dataURL, img);
         };
     };
 
