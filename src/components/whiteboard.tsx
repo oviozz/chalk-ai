@@ -1,15 +1,24 @@
+
+// Whiteboard.tsx
 "use client";
 
-import { useEffect, useCallback, useRef, useState } from 'react';
-import { Undo2, Redo2, Eraser, Sparkles, Send, Lightbulb } from 'lucide-react';
+import { useEffect, useCallback, useRef } from 'react';
+import {Undo2, Redo2, Eraser, Sparkles, Send, Lightbulb, X} from 'lucide-react';
 import useWhiteboard from "@/hooks/useWhiteboard";
 import { FaPenFancy } from "react-icons/fa";
 import { FiImage } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { FaStar, FaWandMagicSparkles } from "react-icons/fa6";
 import {StarModal} from "@/components/star-modal";
+import BrandLogo from "@/components/brand-logo";
+import {TopicType} from "@/app/page";
+import ProblemDisplay from "@/components/problem-display";
 
-export default function Whiteboard() {
+type WhiteboardProps = {
+    topic: TopicType | null,
+    clearTopic: () => void,
+    problem_generated: string
+}
+export default function Whiteboard({topic, clearTopic, problem_generated}: WhiteboardProps) {
     const {
         canvasRef,
         selectedTool,
@@ -32,9 +41,6 @@ export default function Whiteboard() {
         selectedImageId,
         setSelectedImageId,
     } = useWhiteboard();
-
-    // Add state for modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,86 +95,18 @@ export default function Whiteboard() {
         }
     };
 
-    // Sample modal content
-    const modalContent = (
-        <>
-            <p className="mb-3">Welcome to ChalkAI! This interactive whiteboard helps you learn and practice concepts with AI assistance.</p>
-
-            <h4 className="font-semibold text-purple-200 mt-4 mb-2">Tools & Features:</h4>
-            <ul className="space-y-2 list-disc pl-5">
-                <li><strong>Drawing Tools:</strong> Use the pen tool to draw and illustrate your work</li>
-                <li><strong>Images:</strong> Add images to your whiteboard by clicking the image icon</li>
-                <li><strong>AI Assistance:</strong> Get hints, check your work, or submit for review</li>
-                <li><strong>Color & Size:</strong> Customize your pen color and thickness</li>
-            </ul>
-
-            <div className="mt-4 p-3 bg-white/10 rounded-lg">
-                <p className="text-sm italic">Tip: You can also paste images directly from your clipboard!</p>
-            </div>
-        </>
-    );
 
     return (
         <div className="relative h-screen w-screen bg-amber-950 p-4">
             <div className="absolute inset-0 m-4 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==')] rounded-lg p-2">
                 <div className="relative h-full w-full bg-gray-900 rounded-lg border-2 border-gray-800 shadow-2xl">
-
                     {/* Header */}
                     <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4">
-                        <div className="flex items-center gap-3 group">
-                            {/* Logo Container with animated gradient background */}
-                            <div className="relative overflow-hidden rounded-lg w-10 h-10 flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg">
-                                {/* Animated chalk icon */}
-                                <div className="relative flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-                                    <div className="absolute w-6 h-6 bg-white rounded-full opacity-20 animate-pulse"></div>
-                                    <span className="text-white text-lg font-bold relative z-10">
-                                        <FaWandMagicSparkles/>
-                                    </span>
-                                </div>
-
-                                {/* Subtle sparkle effects */}
-                                <div className="absolute top-1 right-1 w-1 h-1 bg-white rounded-full opacity-70 animate-ping"></div>
-                                <div className="absolute bottom-2 left-1 w-1 h-1 bg-white rounded-full opacity-70 animate-ping" style={{animationDelay: '0.5s'}}></div>
-
-                                {/* Light beam effect on hover */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-purple-400 to-blue-300 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                            </div>
-
-                            {/* Text with animated underline effect */}
-                            <div className="relative">
-                                <h1 className="text-2xl font-extrabold text-white font-chalk tracking-wide drop-shadow-lg">
-                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-300">Chalk</span>
-                                    <span className="text-white ml-1">AI</span>
-                                </h1>
-                                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 group-hover:w-full transition-all duration-500 rounded-full shadow-sm shadow-purple-500/50"></div>
-                            </div>
-                        </div>
-
-                        <div onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-4">
-                            <div className="relative">
-                                {/* Main star button with continuous spinning animation - Updated with onClick */}
-                                <div
-                                    className="w-10 h-10 bg-gradient-to-br from-purple-600 via-indigo-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 animate-[wiggle_3s_ease-in-out_infinite] overflow-hidden cursor-pointer hover:brightness-110 transition-all"
-                                >
-                                    {/* Spinning star */}
-                                    <FaStar className="w-5 h-5 text-white drop-shadow-md animate-[spin_6s_linear_infinite]" />
-
-                                    {/* Continuous pinging effect */}
-                                    <div className="absolute inset-0 rounded-lg bg-purple-500 opacity-20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                                </div>
-
-                                {/* Continuous radial particles */}
-                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
-                                <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-                                <div className="absolute -top-1 -left-2 w-1.5 h-1.5 bg-purple-300 rounded-full animate-ping" style={{animationDelay: '0.8s'}}></div>
-
-                                {/* Light burst effect */}
-                                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400/40 to-blue-400/40 animate-pulse"></div>
-                            </div>
-                        </div>
-
+                        <BrandLogo />
+                        <StarModal />
                     </div>
+
+                    {problem_generated && <ProblemDisplay problem={problem_generated} />}
 
                     {/* AI Buttons */}
                     <div className="absolute bottom-4 right-4 flex flex-col gap-3">
@@ -275,7 +213,6 @@ export default function Whiteboard() {
 
                             let clickedImage = false;
 
-                            // Check images in reverse order (top-most first)
                             [...images].reverse().forEach(image => {
                                 if (mouseX >= image.x && mouseX <= image.x + image.width &&
                                     mouseY >= image.y && mouseY <= image.y + image.height) {
@@ -288,7 +225,6 @@ export default function Whiteboard() {
                                         se: [image.x + image.width - handleSize/2, image.y + image.height - handleSize/2]
                                     };
 
-                                    // Check resize handles first
                                     let handle: 'nw' | 'ne' | 'sw' | 'se' | undefined;
                                     Object.entries(handles).forEach(([key, [x, y]]) => {
                                         if (mouseX >= x && mouseX <= x + handleSize &&
@@ -303,7 +239,6 @@ export default function Whiteboard() {
                                         return;
                                     }
 
-                                    // If clicking on image body
                                     if (!handle) {
                                         handleImageMouseDown(e, image);
                                         clickedImage = true;
@@ -330,12 +265,17 @@ export default function Whiteboard() {
                         className="hidden"
                     />
 
-                    {/* Add the modal component */}
-                    <StarModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                        content={modalContent}
-                    />
+                    <div className={"absolute bottom-2 left-2 "}>
+                        <div className={"flex items-center gap-1 text-white font-bold text-2xl"}>
+                            Current Topic: {topic?.topicID.toUpperCase()}
+                            <X
+                                onClick={clearTopic}
+                                className={"text-red-500 w-9 h-9"}
+                                strokeWidth={3}
+                            />
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
