@@ -2,6 +2,8 @@
 
 Chalk AI is an AI-powered online whiteboard 🖊️ designed to help students, educators, and professionals brainstorm, solve problems, and visualize ideas. 🚀
 
+![image](https://github.com/user-attachments/assets/125c82ea-6813-429a-ba65-4dd06ed44304)
+
 ## ✨ Features  
 - **🤖 AI-Powered Hints** – Get context-aware hints while solving problems.  
 - **📚 Problem Generation** – Practice with AI-generated problems.  
